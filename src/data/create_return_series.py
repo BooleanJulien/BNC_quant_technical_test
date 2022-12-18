@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 import load_and_impute
-from ReturnSeriesCalculator import ReturnSeriesCalculator
+from Calculators import ReturnSeriesCalculator
 
 def main():
     benchmark_weights, saa_weights, manager_weights, returns = load_and_impute.get_data()
