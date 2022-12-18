@@ -1,4 +1,5 @@
-<img src="img/nb_logo.png" alt="Logo" style="float:top; margin-right:10px;" /> # Portfolio Attribution Analysis
+<img src="img/nb_logo_2.png" alt="Logo" style="float:top; margin-right:10px;" />
+# Portfolio Attribution Analysis
 ==============================
 
 ## Overview
