@@ -32,6 +32,24 @@ git clone https://github.com/BooleanJulien/BNC_quant_technical_test.git
 ```bash
 cd BNC_quant_technical_test
 ```
+3. Install packages:
+Consider using a conda environment as follows:
+```bash
+conda create --name portfolio_attribution -y
+```
+
+```bash
+conda activate portfolio_attribution
+```
+
+```
+conda install -c anaconda pip -y
+```
+
+pip install the necessary packages
+```bash
+pip install -r requirements.txt
+```
 
 ### Usage
 
