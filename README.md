@@ -15,7 +15,7 @@ This project is designed to conduct a portfolio attribution analysis for a given
 
 ### Prerequisites
 
-In order to run this project, you will need the following software and libraries:
+In order to run this project, you will need the following software and libraries at minimum, but consider using the pip install to ensure running smoothly:
 
 - Python 3
 - NumPy
