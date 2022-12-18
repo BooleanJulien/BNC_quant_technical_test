@@ -2,6 +2,8 @@
 
 # Portfolio Attribution Analysis
 
+![](img/results.jpg)
+
 ## Overview
 
 This project is designed to conduct a portfolio attribution analysis for a given set of securities. The analysis will consist of three tasks:
@@ -53,7 +55,7 @@ pip install -r requirements.txt
 
 ### Usage
 
-Before running the analysis, make sure to create the data directory with a raw, interim, and processed folder. If you are wanting to contribute, make sure to add this directory to your .gitignore file. You can use the following code in the top level of the repo. 
+Before running the analysis, make sure to create the data/ directory with a raw, interim, and processed folder. If you are wanting to contribute, make sure to add this directory to your .gitignore file. You can use the following code in the top level of the repo. 
 
 ```bash
 mkdir -p data/{raw,interim,processed}
@@ -81,7 +83,7 @@ The results of the analysis will be saved to the `data/processed` directory as t
 
 ## Additional Resources
 
-You may find the notebooks in the [notebooks](notebooks) directory useful for exploratory data analysis and understanding the inner workings of the project.
+You may find the notebooks in the [notebooks](notebooks) directory useful for exploratory data analysis, discussion of results, and understanding more of the inner workings of the imputation methodology used to deal with missing data.
 
 ## License
 
