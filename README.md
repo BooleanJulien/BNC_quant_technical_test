@@ -41,7 +41,7 @@ pip install -r requirements.txt
 
 ### Usage
 
-Before running the analysis, make sure to add your copy of `Technical Test - Portfolio Attribution.xlsm` to the `data/raw` directory.
+Before running the analysis, make sure to create a directory called data/raw and add your copy of `Technical Test - Portfolio Attribution.xlsm` to this directory.
 
 To run the analysis, navigate to the `src/data` directory and execute the following command:
 
