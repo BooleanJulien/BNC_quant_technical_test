@@ -35,7 +35,7 @@ cd BNC_quant_technical_test
 
 ### Usage
 
-Before running the analysis, make sure to create the data directory. If you are wanting to contribute, make sure to add this directory to your .gitignore file. You can use the following code in the top level of the repo. 
+Before running the analysis, make sure to create the data directory with a raw, interim, and processed folder. If you are wanting to contribute, make sure to add this directory to your .gitignore file. You can use the following code in the top level of the repo. 
 
 ```bash
 mkdir -p data/{raw,interim,processed}
