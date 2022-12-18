@@ -1,57 +1,69 @@
-portfolio_attribution
+# Portfolio Attribution Analysis
 ==============================
 
-Technical test on portfolio attribution data analysis and visualization for National Bank
+## Overview
 
-Project Organization
-------------
+This project is designed to conduct a portfolio attribution analysis for a given set of securities. The analysis will consist of three tasks:
 
-    ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
-    ├── README.md          <- The top-level README for developers using this project.
-    ├── data
-    │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been transformed.
-    │   ├── processed      <- The final, canonical data sets for modeling.
-    │   └── raw            <- The original, immutable data dump.
-    │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
-    │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
-    │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
-    │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-    │
-    ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures        <- Generated graphics and figures to be used in reporting
-    │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
-    │
-    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-    ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
-    │
-    └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
+1. Generating a portfolio return series
+2. Generating a portfolio index series
+3. Generating a cumulative outperformance series
 
+## Getting Started
 
---------
+### Prerequisites
+
+In order to run this project, you will need the following software and libraries:
+
+- Python 3
+- NumPy
+- Pandas
+
+### Installation
+
+1. Clone this repository to your local machine:
+
+```bash
+git clone https://github.com/BooleanJulien/BNC_quant_technical_test.git
+```
+2. Navigate to the project directory:
+
+```bash
+cd portfolio_attribution
+```
+3. Install the required libraries:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Usage
+
+Before running the analysis, make sure to add your copy of `Technical Test - Portfolio Attribution.xlsm` to the `data/raw` directory.
+
+To run the analysis, navigate to the `src/data` directory and execute the following command:
+
+```bash
+python run_all.py
+```
+
+The results of the analysis will be saved to the `data/processed` directory as three CSV files:
+
+1. `returns.csv`: Contains the portfolio return series.
+2. `indexed_performance.csv`: Contains the portfolio index series.
+3. `cumulative_outperformance.csv`: Contains the cumulative outperformance series.
+
+## Additional Resources
+
+You may find the notebooks in the [notebooks](notebooks) directory useful for exploratory data analysis and understanding the inner workings of the project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+We would like to thank the reviewers for their time and consideration in evaluating this project. Your feedback is greatly appreciated.
+
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
