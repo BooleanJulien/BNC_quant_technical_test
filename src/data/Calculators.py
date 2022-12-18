@@ -2,9 +2,31 @@ import pandas as pd
 import numpy as np
 
 class ReturnSeriesCalculator:
+    """
+    ReturnSeriesCalculator is a class for calculating fund and benchmark returns based on given weightings and return data.
+
+    Attributes:
+    benchmark_weights (pd.DataFrame): Dataframe of benchmark weights with datetime index.
+    saa_weights (pd.DataFrame): Dataframe of strategic asset allocation weights with datetime index.
+    manager_weights (dict): Dictionary with keys of return categories and values of dataframes of fund allocations for that asset type.
+    index_returns (pd.DataFrame): Dataframe of index returns with datetime index.
+    fund_returns (pd.DataFrame): Dataframe of fund returns with datetime index.
+    benchmark_returns (pd.DataFrame): Dataframe of calculated benchmark returns with datetime index.
+    saa_returns (pd.DataFrame): Dataframe of calculated SAA returns with datetime index.
+    manager_returns (dict): Dictionary with keys of return categories and values of dataframes of calculated fund returns for that asset type.
+
+    Methods:
+    get_benchmark_returns(): Calculates and sets benchmark_returns attribute.
+    get_saa_returns(): Calculates and sets saa_returns attribute.
+    get_manager_returns(): Calculates and sets manager_returns attribute.
+    get_manager_returns_with_drift(): Calculates and returns manager returns as if only rebalanced on target dates.
+    get_all_returns(): Calls all return calculation methods to populate all return attributes.
+    create_return_comparison(): Creates a comparison df of all calculated returns.
+    write_csv(file_name): Writes all calculated returns to a CSV file with the given file name.
+    return_gen(return_df, allocation_df): Generator function for calculating returns based on given return and allocation data.
+    """
 
     def __init__(self, benchmark_weights, saa_weights, manager_weights, returns):
-
         returns.index = pd.to_datetime(returns.index)
 
         # in general here dropping multi-indexes and renaming columns
@@ -43,6 +65,21 @@ class ReturnSeriesCalculator:
         }
 
     def return_gen(self, return_df, allocation_df):
+        """
+        return_gen is a generator function for calculating returns based on given return and allocation data for a given date.
+
+        Attributes:
+        return_df (pd.DataFrame): Dataframe of returns with datetime index.
+        allocation_df (pd.DataFrame): Dataframe of allocation weights with datetime index.
+
+        Yields:
+        pd.DataFrame: Dataframe of calculated returns for a given date and allocation.
+
+        Raises:
+        AssertionError: If the columns of return_df and allocation_df are not equal.
+        AssertionError: If the sum of allocation values is not equal to 1.
+        AssertionError: If the date of the allocation decision is not before the date it is used.
+        """
         np.testing.assert_array_equal(return_df.columns, allocation_df.columns)
 
         for date, returns in return_df.iterrows():
@@ -66,7 +103,19 @@ class ReturnSeriesCalculator:
             yield pd.DataFrame(returns).T * allocation
 
     def get_benchmark_returns(self):
+        """
+        get_benchmark_returns is a method for calculating and setting the benchmark_returns attribute based on the benchmark_weights attribute and the index_returns attribute.
 
+        Attributes:
+        self.index_returns (pd.DataFrame): Dataframe of index returns with datetime index.
+        self.benchmark_weights (pd.DataFrame): Dataframe of benchmark weights with datetime index.
+
+        Sets:
+        self.benchmark_returns (pd.DataFrame): Dataframe of calculated benchmark returns with datetime index.
+
+        Raises:
+        AssertionError: If the sum of the benchmark weights * their returns at the first date does not match the benchmark_returns value at the same date.
+        """
         self.benchmark_returns = pd.concat(
 
             [df for df in self.return_gen(
@@ -80,6 +129,20 @@ class ReturnSeriesCalculator:
             self.benchmark_returns[0])
 
     def get_saa_returns(self):
+        """
+        get_saa_returns is a method for calculating and setting the saa_returns attribute based on the saa_weights attribute and the index_returns attribute.
+
+        Attributes:
+        self.index_returns (pd.DataFrame): Dataframe of index returns with datetime index.
+        self.saa_weights (pd.DataFrame): Dataframe of strategic asset allocation weights with datetime index.
+
+        Sets:
+        self.saa_returns (pd.DataFrame): Dataframe of calculated SAA returns with datetime index.
+
+        Raises:
+        AssertionError: If the sum of the SAA weights * their returns at the first date does not match the saa_returns value at the same date.
+        AssertionError: If the sum of the SAA weights * their returns at the last date does not match the saa_returns value at the same date.
+        """
 
         self.saa_returns = pd.concat(
 
@@ -99,6 +162,18 @@ class ReturnSeriesCalculator:
             self.saa_returns[0])
 
     def fund_allocation_gen(self, asset_fund_df, saa_weights, asset_name):
+        """
+        fund_allocation_gen is a generator function for calculating fund allocations taking
+        into account asset class and SAA weights.
+
+        Attributes:
+        asset_fund_df (pd.DataFrame): Dataframe of fund allocations within a given asset class with datetime index.
+        saa_weights (pd.DataFrame): Dataframe of strategic asset allocation weights with datetime index.
+        asset_name (str): Name of the asset class.
+
+        Yields:
+        pd.DataFrame: Dataframe of calculated fund allocations for a given asset class for a given date.
+        """
         # generates allocations per fund taking into account the SAA
         saa_asset_index = list(saa_weights.columns).index(asset_name)
 
@@ -117,6 +192,20 @@ class ReturnSeriesCalculator:
             yield pd.DataFrame(within_asset_fund_allocation).T * asset_allocation
 
     def fund_return_gen(self, fund_returns_df, fund_weights):
+        """
+        fund_return_gen is a generator function for calculating returns for a given set of funds based on fund weights.
+
+        Attributes:
+        fund_returns_df (pd.DataFrame): Dataframe of fund returns with datetime index.
+        fund_weights (pd.DataFrame): Dataframe of fund weights with datetime index.
+
+        Yields:
+        pd.DataFrame: Dataframe of calculated returns for a given set of funds for a given date.
+
+        Raises:
+        AssertionError: If the columns of fund_returns_df and fund_weights are not equal.
+        AssertionError: If the date of the fund weight decision is not before the date it is used.
+        """
         np.testing.assert_array_equal(fund_returns_df.columns, fund_weights.columns)
 
         for date, fund_returns in fund_returns_df.iterrows():
@@ -132,6 +221,23 @@ class ReturnSeriesCalculator:
             yield pd.DataFrame(fund_returns).T * fund_allocation
 
     def get_manager_returns(self):
+        """
+        get_manager_returns is a method for calculating and setting the manager_returns attribute based on the manager_weights attribute, the saa_weights attribute, and the fund_returns attribute.
+
+        Attributes:
+        self.manager_weights (dict): Dictionary of dataframes of fund allocations for each asset class.
+        self.saa_weights (pd.DataFrame): Dataframe of strategic asset allocation weights with datetime index.
+        self.fund_returns (pd.DataFrame): Dataframe of fund returns with datetime index.
+
+        Sets:
+        self.fund_saa_allocation (pd.DataFrame): Dataframe of fund allocations with datetime index, taking into account SAA weights.
+        self.manager_returns (pd.DataFrame): Dataframe of calculated manager returns with datetime index.
+
+        Raises:
+        AssertionError: If the sum of the fund_saa_allocation dataframe is not equal to 1 for all dates.
+        AssertionError: If the sum of the fund weights * their returns at the first date does not match the corresponding fund_saa_allocation value at the same date.
+        AssertionError: If the sum of the fund weights * their returns at the last date does not match the corresponding fund_saa_allocation value at the same date.
+        """
 
         temp_fund_asset_dict = {}
 
@@ -178,7 +284,19 @@ class ReturnSeriesCalculator:
         ).sum(axis=1)
 
     def get_manager_returns_with_drift(self):
-    # we will simulate each day to get these returns
+        """Simulate the manager's returns by applying daily returns and rebalancing at target dates.
+
+        This method simulates the returns of the manager's allocation decisions
+        if they were only rebalanced on target dates.
+        It does this by applying each day's return to the previous day's portfolio value
+        and rebalancing the portfolio when the date matches a target date in the `fund_saa_allocation` dataframe.
+        
+        Parameters:
+            None
+            
+        Returns:
+            self.manager_returns_with_drift (pandas.Series): The simulated returns of the manager's allocation decisions, with dates as the index.
+        """
 
         # utility functions for this process
         def apply_one_day_return(start_value, daily_return):
@@ -234,12 +352,53 @@ class ReturnSeriesCalculator:
         self.return_comparison_df.to_csv(path)
 
 class IndexCalculator(ReturnSeriesCalculator):
+    """
+    IndexCalculator is a class for calculating and writing cumulative and indexed returns data based on the parent ReturnSeriesCalculator class.
+
+    Attributes:
+    benchmark_weights (pd.DataFrame): Dataframe of benchmark weights with datetime index.
+    saa_weights (pd.DataFrame): Dataframe of strategic asset allocation weights with datetime index.
+    manager_weights (dict): Dictionary with keys of return categories and values of dataframes of fund allocations for that asset type.
+    index_returns (pd.DataFrame): Dataframe of index returns with datetime index.
+    fund_returns (pd.DataFrame): Dataframe of fund returns with datetime index.
+    benchmark_returns (pd.DataFrame): Dataframe of calculated benchmark returns with datetime index.
+    saa_returns (pd.DataFrame): Dataframe of calculated SAA returns with datetime index.
+    manager_returns (dict): Dictionary with keys of return categories and values of dataframes of calculated fund returns for that asset type.
+    cumulative_return_df (pd.DataFrame): Dataframe of cumulative returns with datetime index.
+    indexed_df (pd.DataFrame): Dataframe of indexed returns with datetime index.
+
+    Methods:
+    get_benchmark_returns(): Calculates and sets benchmark_returns attribute.
+    get_saa_returns(): Calculates and sets saa_returns attribute.
+    get_manager_returns(): Calculates and sets manager_returns attribute.
+    get_manager_returns_with_drift(): Calculates and returns manager returns as if only rebalanced on target dates.
+    get_all_returns(): Calls all return calculation methods to populate all return attributes.
+    create_return_comparison(): Creates a comparison df of all calculated returns.
+    get_cumulative_return(): Calculates and sets cumulative_return_df attribute.
+    get_indexed_df(date): Calculates and sets indexed_df attribute based on the given date.
+    write_csv(path): Writes indexed_df to a CSV file at the given file path.
+    return_gen(return_df, allocation_df): Generator function for calculating returns based on given return and allocation data.
+    """
 
     def get_cumulative_return(self):
         self.cumulative_return_df = (
             self.return_comparison_df + 1)[::-1].cumprod(axis=0)[::-1] - 1
 
     def get_indexed_df(self, date="2020-03-06"):
+        """This method, get_indexed_df, creates an indexed version of the
+        cumulative_return_df attribute.
+        The indexed version is created by dividing each row of the
+        cumulative_return_df by the value at a specified date and multiplying
+        the result by 100. The specified date should be a string in the format 
+        "YYYY-MM-DD" and should be in the index of cumulative_return_df.
+        The resulting indexed dataframe is stored in the indexed_df attribute.
+
+        Parameters
+        ----------
+        date : str, optional
+            date on which to index, by default "2020-03-06"
+
+        """
         assert (pd.to_datetime(date) in
                 self.cumulative_return_df.index), "date should be str in format YYYY-MM-DD and be in index"
         date = pd.to_datetime(date)
@@ -254,12 +413,48 @@ class IndexCalculator(ReturnSeriesCalculator):
 
 
 class CumulativeOutperformanceCalculator(ReturnSeriesCalculator):
+    """
+    CumulativeOutperformanceCalculator is a class for calculating and writing cumulative outperformance data based on the parent ReturnSeriesCalculator class.
 
+    Attributes:
+    benchmark_weights (pd.DataFrame): Dataframe of benchmark weights with datetime index.
+    saa_weights (pd.DataFrame): Dataframe of strategic asset allocation weights with datetime index.
+    manager_weights (dict): Dictionary with keys of return categories and values of dataframes of fund allocations for that asset type.
+    index_returns (pd.DataFrame): Dataframe of index returns with datetime index.
+    fund_returns (pd.DataFrame): Dataframe of fund returns with datetime index.
+    benchmark_returns (pd.DataFrame): Dataframe of calculated benchmark returns with datetime index.
+    saa_returns (pd.DataFrame): Dataframe of calculated SAA returns with datetime index.
+    manager_returns (dict): Dictionary with keys of return categories and values of dataframes of calculated fund returns for that asset type.
+    cumulative_return_df (pd.DataFrame): Dataframe of cumulative returns with datetime index.
+    cumulative_outperformance_df (pd.DataFrame): Dataframe of cumulative outperformance with datetime index.
+
+    Methods:
+    get_benchmark_returns(): Calculates and sets benchmark_returns attribute.
+    get_saa_returns(): Calculates and sets saa_returns attribute.
+    get_manager_returns(): Calculates and sets manager_returns attribute.
+    get_manager_returns_with_drift(): Calculates and returns manager returns as if only rebalanced on target dates.
+    get_all_returns(): Calls all return calculation methods to populate all return attributes.
+    create_return_comparison(): Creates a comparison df of all calculated returns.
+    get_cumulative_return(): Calculates and sets cumulative_return_df attribute.
+    get_cumulative_outperformance_df(): Calculates and sets cumulative_outperformance_df attribute.
+    write_csv(path): Writes cumulative_outperformance_df to a CSV file at the given file path.
+    return_gen(return_df, allocation_df): Generator function for calculating returns based on given return and allocation data.
+    """
     def get_cumulative_return(self):
         self.cumulative_return_df = (
             self.return_comparison_df + 1)[::-1].cumprod(axis=0)[::-1]
 
     def get_cumulative_outperformance_df(self):
+        """
+        Calculate the cumulative outperformance of different return series.
+
+        This method calculates the difference between three return series in the `cumulative_return_df` dataframe:
+        1. "SAA Returns" versus "Benchmark Returns"
+        2. "Manager Returns" versus "SAA Returns"
+        3. "Manager Returns With Drift" versus "Manager Returns"
+
+        The resulting outperformance values are stored in the `cumulative_outperformance_df` dataframe.
+        """
         self.cumulative_outperformance_df = pd.DataFrame(
             {"SAA vs Benchmark": self.cumulative_return_df["SAA Returns"] - self.cumulative_return_df["Benchmark Returns"],
              "Manager vs SAA": self.cumulative_return_df["Manager Returns"] - self.cumulative_return_df["SAA Returns"],
