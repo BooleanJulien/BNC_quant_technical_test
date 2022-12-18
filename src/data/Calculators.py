@@ -215,6 +215,13 @@ class ReturnSeriesCalculator:
 
         self.manager_returns_with_drift = portfolio_value[::-1].pct_change()[::-1].dropna()
 
+    def get_all_returns(self):
+        self.get_benchmark_returns()
+        self.get_saa_returns()
+        self.get_manager_returns()
+        self.get_manager_returns_with_drift()
+        self.create_return_comparison_df()
+
     def create_return_comparison_df(self):
 
         self.return_comparison_df = pd.DataFrame(
@@ -225,3 +232,38 @@ class ReturnSeriesCalculator:
 
     def write_csv(self, path):
         self.return_comparison_df.to_csv(path)
+
+class IndexCalculator(ReturnSeriesCalculator):
+
+    def get_cumulative_return(self):
+        self.cumulative_return_df = (
+            self.return_comparison_df + 1)[::-1].cumprod(axis=0)[::-1] - 1
+
+    def get_indexed_df(self, date="2020-03-06"):
+        assert (pd.to_datetime(date) in
+                self.cumulative_return_df.index), "date should be str in format YYYY-MM-DD and be in index"
+        date = pd.to_datetime(date)
+
+        one_plus_cumulative_return = self.cumulative_return_df + 1
+        index_row = one_plus_cumulative_return.loc[date]
+
+        self.indexed_df = one_plus_cumulative_return.div(index_row, axis=1) * 100
+
+    def write_csv(self, path):
+        self.indexed_df.to_csv(path)
+
+
+class CumulativeOutperformanceCalculator(ReturnSeriesCalculator):
+
+    def get_cumulative_return(self):
+        self.cumulative_return_df = (
+            self.return_comparison_df + 1)[::-1].cumprod(axis=0)[::-1]
+
+    def get_cumulative_outperformance_df(self):
+        self.cumulative_outperformance_df = pd.DataFrame(
+            {"SAA vs Benchmark": self.cumulative_return_df["SAA Returns"] - self.cumulative_return_df["Benchmark Returns"],
+             "Manager vs SAA": self.cumulative_return_df["Manager Returns"] - self.cumulative_return_df["SAA Returns"],
+             "Manager Drift vs Daily Rebalance": self.cumulative_return_df["Manager Returns With Drift"] - self.cumulative_return_df["Manager Returns"]})
+
+    def write_csv(self, path):
+        self.cumulative_outperformance_df.to_csv(path)
