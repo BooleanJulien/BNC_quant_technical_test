@@ -85,6 +85,8 @@ The results of the analysis will be saved to the `data/processed` directory as t
 
 You may find the notebooks in the [notebooks](notebooks) directory useful for exploratory data analysis, discussion of results, and understanding more of the inner workings of the imputation methodology used to deal with missing data.
 
+You may also wish to view the scripts used in this analysis directly. They are available in [this folder](src/data).
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
