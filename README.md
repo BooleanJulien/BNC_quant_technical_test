@@ -1,4 +1,5 @@
-<img src="img/nb_logo_2.png" alt="Logo" style="float:top; margin-right:10px;" />
+![](data/external/nb_logo_2.png)
+
 # Portfolio Attribution Analysis
 ==============================
 
