@@ -1,4 +1,4 @@
-# Portfolio Attribution Analysis
+<img src="data/external/nb_logo.png" alt="Logo" style="float:left; margin-right:10px;" /> # Portfolio Attribution Analysis
 ==============================
 
 ## Overview
