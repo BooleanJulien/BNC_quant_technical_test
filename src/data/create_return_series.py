@@ -11,6 +11,7 @@ def main():
     ReturnCalc.get_saa_returns()
     ReturnCalc.get_benchmark_returns()
     ReturnCalc.get_manager_returns()
+    ReturnCalc.get_manager_returns_with_drift()
 
     ReturnCalc.create_return_comparison_df()
     ReturnCalc.write_csv("../../data/processed/returns.csv")

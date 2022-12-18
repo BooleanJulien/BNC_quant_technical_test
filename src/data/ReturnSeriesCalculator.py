@@ -161,28 +161,67 @@ class ReturnSeriesCalculator:
         # switch back order of colnames to match fund returns
         temp_fund_allocation_list[0], temp_fund_allocation_list[1] = temp_fund_allocation_list[1], temp_fund_allocation_list[0]
 
-        fund_saa_allocation = pd.concat(temp_fund_allocation_list, axis=1)
+        self.fund_saa_allocation = pd.concat(temp_fund_allocation_list, axis=1)
 
         # weights should sum to 1 across all assets now instead of within asset
         np.testing.assert_array_almost_equal(
-            fund_saa_allocation.sum(axis=1),
-            np.ones(len(fund_saa_allocation)))
+            self.fund_saa_allocation.sum(axis=1),
+            np.ones(len(self.fund_saa_allocation)))
 
         self.manager_returns = pd.concat(
 
             [df for df in
              self.fund_return_gen(fund_returns_df=self.fund_returns,
-                                  fund_weights=fund_saa_allocation)],
+                                  fund_weights=self.fund_saa_allocation)],
             axis=0
 
         ).sum(axis=1)
+
+    def get_manager_returns_with_drift(self):
+    # we will simulate each day to get these returns
+
+        # utility functions for this process
+        def apply_one_day_return(start_value, daily_return):
+            return start_value.set_index(daily_return.index) * daily_return
+
+        def daily_fund_return_gen(fund_return_df, fund_saa_allocation):
+            # yields daily returns in ascending date order
+            # adding 1 makes returns ready for multiplication
+            for date, fund_return in (fund_return_df[::-1] + 1).iterrows():
+                yield(pd.DataFrame(fund_return).T)
+
+        def rebalance(current_value, fund_weights):
+            total_value = current_value.sum(axis=1)[0]
+            return fund_weights * total_value
+
+        fund_value = pd.DataFrame(self.fund_saa_allocation.iloc[-1]).T
+        start_value = fund_value
+
+        for daily_return in daily_fund_return_gen(self.fund_returns, self.fund_saa_allocation):
+
+            fund_value = pd.concat(
+                [apply_one_day_return(start_value, daily_return),
+                    fund_value])
+
+            start_value = pd.DataFrame(fund_value.iloc[0]).T
+
+            if start_value.index[0] in self.fund_saa_allocation.index:
+
+                start_value = rebalance(
+                    start_value,
+                    pd.DataFrame(self.fund_saa_allocation.loc[start_value.index[0]]).T)
+
+        portfolio_value = fund_value.sum(axis=1)
+
+        self.manager_returns_with_drift = portfolio_value[::-1].pct_change()[::-1].dropna()
 
     def create_return_comparison_df(self):
 
         self.return_comparison_df = pd.DataFrame(
             {"Benchmark Returns": self.benchmark_returns,
              "SAA Returns": self.saa_returns,
-             "Manager Returns": self.manager_returns})
+             "Manager Returns": self.manager_returns,
+             "Manager Returns With Drift": self.manager_returns_with_drift})
 
     def write_csv(self, path):
         self.return_comparison_df.to_csv(path)
