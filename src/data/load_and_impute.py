@@ -84,7 +84,9 @@ def get_data():
         header=[0, 1, 2],
         index_col=0)
 
-    returns = pd.read_csv("../data/interim/returns.csv", header=[0, 1], index_col=[0])
+    returns = pd.read_csv("../../data/interim/returns.csv", header=[0, 1], index_col=[0])
+
+    return benchmark_weights, saa_weights, manager_weights, returns
 
 
 
