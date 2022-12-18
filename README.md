@@ -1,7 +1,6 @@
 ![](img/nb_logo_3.png)
 
 # Portfolio Attribution Analysis
-==============================
 
 ## Overview
 
@@ -15,11 +14,11 @@ This project is designed to conduct a portfolio attribution analysis for a given
 
 ### Prerequisites
 
-In order to run this project, you will need the following software and libraries at minimum, but consider using the pip install to ensure running smoothly:
+In order to run this project, you will need the following software and libraries at minimum, consider using a conda environment to manage dependencies. 
 
 - Python 3
-- NumPy
 - Pandas
+- openpyxl
 
 ### Installation
 
@@ -32,11 +31,6 @@ git clone https://github.com/BooleanJulien/BNC_quant_technical_test.git
 
 ```bash
 cd BNC_quant_technical_test
-```
-3. Install the required libraries:
-
-```bash
-pip install -r requirements.txt
 ```
 
 ### Usage
@@ -77,7 +71,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgements
 
-We would like to thank the reviewers for their time and consideration in evaluating this project. Your feedback is greatly appreciated.
+I would like to thank the reviewers for their time and consideration in evaluating this project. Your feedback is greatly appreciated.
 
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
