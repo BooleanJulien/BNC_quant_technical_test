@@ -31,7 +31,7 @@ git clone https://github.com/BooleanJulien/BNC_quant_technical_test.git
 2. Navigate to the project directory:
 
 ```bash
-cd portfolio_attribution
+cd BNC_quant_technical_test
 ```
 3. Install the required libraries:
 
