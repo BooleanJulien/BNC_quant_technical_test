@@ -41,12 +41,24 @@ pip install -r requirements.txt
 
 ### Usage
 
-Before running the analysis, make sure to create a directory called data/raw and add your copy of `Technical Test - Portfolio Attribution.xlsm` to this directory.
+Before running the analysis, make sure to create the data directory. If you are wanting to contribute, make sure to add this directory to your .gitignore file. You can use the following code in the top level of the repo. 
+
+```bash
+mkdir -p data/{raw,interim,processed}
+```
+
+Add your copy of `Technical Test - Portfolio Attribution.xlsm` to the data/raw directory.
 
 To run the analysis, navigate to the `src/data` directory and execute the following command:
 
 ```bash
 python run_all.py
+```
+
+If you wish to use a custom date for the indexing, use this format:
+
+```bash
+python run_all.py YYYY-MM-DD
 ```
 
 The results of the analysis will be saved to the `data/processed` directory as three CSV files:
