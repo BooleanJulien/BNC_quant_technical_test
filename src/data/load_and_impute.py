@@ -55,6 +55,39 @@ def read_sheets():
     return benchmark_weights, saa_weights, manager_weights, returns
 
 
+def get_data():
+    """
+    Loads data from excel file in data folder and
+    loads cleaned returns data from interim folder
+
+    Returns
+    -------
+    pd.DataFrame
+        4 dataframes corresponding to each sheet in
+        raw data
+    """
+    benchmark_weights = pd.read_excel(
+        io="../../data/raw/Technical Test - Portfolio Attribution.xlsm",
+        sheet_name="Benchmark Weights",
+        header=[0, 1],
+        index_col=0)
+
+    saa_weights = pd.read_excel(
+        io="../../data/raw/Technical Test - Portfolio Attribution.xlsm",
+        sheet_name="SAA Weights",
+        header=[0, 1],
+        index_col=0)
+
+    manager_weights = pd.read_excel(
+        io="../../data/raw/Technical Test - Portfolio Attribution.xlsm",
+        sheet_name="Manager Weights",
+        header=[0, 1, 2],
+        index_col=0)
+
+    returns = pd.read_csv("../data/interim/returns.csv", header=[0, 1], index_col=[0])
+
+
+
 def single_fill_conditionally_with_geometric_average(t_0,
                                                      t_plus_1,
                                                      fund,
