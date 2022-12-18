@@ -1,4 +1,4 @@
-![](data/external/nb_logo_2.png)
+![](img/nb_logo_2.png)
 
 # Portfolio Attribution Analysis
 ==============================
